@@ -1,5 +1,21 @@
 import axios from "axios";
-import { Request } from "express";
+
+export interface LoggerFile {
+  fieldname: string;
+  originalname?: string;
+  filename?: string;
+  mimetype: string;
+  size: number;
+}
+
+export interface LoggerRequest {
+  method?: string;
+  url?: string;
+  headers?: Record<string, string | string[] | undefined>;
+  body?: unknown;
+  file?: LoggerFile;
+  files?: LoggerFile[] | Record<string, LoggerFile[]>;
+}
 
 interface FileInfo {
   field_name: string;
@@ -18,7 +34,7 @@ export class DiscordLogger {
   constructor(private readonly webhookUrl: string) {}
 
   async send(
-    request: Request,
+    request: LoggerRequest,
     title: string,
     message: string,
     color: number,
@@ -69,35 +85,36 @@ export class DiscordLogger {
     }
   }
 
-  private formatRequestBody(request: Request): string {
+  private formatRequestBody(request: LoggerRequest): string {
     if (!request.body && !request.file && !request.files) {
       return "No body payload available";
     }
 
+    const contentType = request.headers?.["content-type"];
     const formatedData: BodyRequestFormat = {
-      type: request.headers["content-type"] || "Unknown",
+      type: Array.isArray(contentType) ? contentType[0] : contentType || "Unknown",
       fields: {},
       files: [],
     };
     if (request.file) {
       formatedData.files.push({
         field_name: request.file.fieldname,
-        file_name: request.file.originalname || request.file.filename,
+        file_name: request.file.originalname || request.file.filename || "Unknown",
         mimetype: request.file.mimetype,
         size: request.file.size.toString() + " bytes",
       });
     }
     if (request.files) {
-      for (const [, fileValues] of Object.entries(request.files)) {
-        const fileArray = Array.isArray(fileValues) ? fileValues : [fileValues];
-        for (const f of fileArray as Express.Multer.File[]) {
-          formatedData.files.push({
-            field_name: f.fieldname,
-            file_name: f.originalname || f.filename,
-            mimetype: f.mimetype,
-            size: f.size.toString() + " bytes",
-          });
-        }
+      const filesArray = Array.isArray(request.files)
+        ? request.files
+        : Object.values(request.files).flat();
+      for (const f of filesArray) {
+        formatedData.files.push({
+          field_name: f.fieldname,
+          file_name: f.originalname || f.filename || "Unknown",
+          mimetype: f.mimetype,
+          size: f.size.toString() + " bytes",
+        });
       }
     }
 

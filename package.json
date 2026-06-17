@@ -1,12 +1,13 @@
 {
   "name": "@murbagus/exprsignal",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "publishConfig": {
     "access": "public"
   },
   "description": "Exprsignal provides an efficient, async solution for capturing and forwarding Express.js request payload logs to Discord channels, ideal for developers needing quick, reliable error tracking and payload inspection without disrupting app flow.",
   "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
@@ -35,12 +36,9 @@
   },
   "homepage": "https://github.com/murbagus/exprsignal#readme",
   "dependencies": {
-    "@types/multer": "^2.0.0",
-    "axios": "^1.11.0",
-    "multer": "^2.0.2"
+    "axios": "^1.11.0"
   },
   "devDependencies": {
-    "@types/express": "^5.0.0",
     "typescript": "^5.0.0",
     "@types/node": "^20.0.0"
   },
@@ -51,6 +49,5 @@
     "dist/**/*",
     "README.md",
     "LICENSE"
-  ],
-  "tspMain": "dist/index.js"
+  ]
 }

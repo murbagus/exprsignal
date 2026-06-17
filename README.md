@@ -156,13 +156,35 @@ Sends a formatted message to Discord with request details.
 
 **Parameters:**
 
-- `request: Request` - Express request object
+- `request: LoggerRequest` - Request object to log (compatible with Express `Request`)
 - `title: string` - Message title (appears as embed title)
 - `message: string` - Main message content
 - `color: number` - Discord embed color (decimal format)
 - `stackTrace?: string` - Optional stack trace for errors
 
 **Returns:** `Promise<void>`
+
+### Types
+
+ExpSignal exports the following TypeScript types for building request objects:
+
+```typescript
+import { LoggerRequest, LoggerFile } from "@murbagus/exprsignal";
+
+const request: LoggerRequest = {
+  method: "POST",
+  url: "/api/upload",
+  headers: { "content-type": "multipart/form-data" },
+  body: { name: "Test" },
+  file: {
+    fieldname: "file",
+    originalname: "photo.jpg",
+    filename: "photo.jpg",
+    mimetype: "image/jpeg",
+    size: 1024,
+  },
+};
+```
 
 ## 🔧 Getting Discord Webhook URL
 
