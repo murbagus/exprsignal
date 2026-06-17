@@ -186,6 +186,43 @@ const request: LoggerRequest = {
 };
 ```
 
+### Express Adapter Helper
+
+If you prefer to convert an Express `Request` into a `LoggerRequest` explicitly, use the `toLoggerRequest` helper. It handles both single and multiple file uploads (Multer) and returns a clean `LoggerRequest` object.
+
+```typescript
+import express from "express";
+import { DiscordLogger, toLoggerRequest } from "@murbagus/exprsignal";
+
+const app = express();
+const logger = new DiscordLogger("YOUR_DISCORD_WEBHOOK_URL");
+
+app.use(express.json());
+
+app.use(async (error, req, res, next) => {
+  const loggerRequest = toLoggerRequest(req);
+
+  await logger.send(
+    loggerRequest,
+    "🚨 Internal Server Error",
+    error.message,
+    15548997,
+    error.stack
+  );
+
+  res.status(500).json({ error: "Internal Server Error" });
+});
+```
+
+**Function signature:**
+
+```typescript
+toLoggerRequest(request: Request): LoggerRequest
+```
+
+- `request: Request` - Express request object
+- **Returns:** `LoggerRequest` - Request object ready to be passed to `DiscordLogger.send`
+
 ## 🔧 Getting Discord Webhook URL
 
 1. Go to your Discord server
